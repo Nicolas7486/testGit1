@@ -6,8 +6,9 @@
 
 int main()
 {
-    BITMAP *image1;
-    BITMAP *image2;
+    BITMAP *imageTitle;
+    BITMAP *imageRect1;
+    BITMAP *imageRect2;
     BITMAP *buffer; // Déclaration du double buffer
 
     srand(time(NULL));
@@ -23,25 +24,36 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    image1 = load_bitmap("Stylo.bmp", NULL);
-    if (!image1)
+    imageTitle = load_bitmap("Stylo.bmp", NULL);
+    if (!imageTitle)
     {
-        allegro_message("pas pu trouver/charger mon_image1.bmp");
+        allegro_message("Impossible de charger l'image de l'écran titre");
         allegro_exit();
         exit(EXIT_FAILURE);
     }
 
-    image2 = load_bitmap("Cowboyo.bmp", NULL);
-    if (!image2)
+    imageRect1 = load_bitmap("Cowboyo.bmp", NULL);
+    if (!imageRect1)
     {
-        allegro_message("pas pu trouver/charger mon_image2.bmp");
+        allegro_message("Impossible de charger l'image pour le premier rectangle");
         allegro_exit();
         exit(EXIT_FAILURE);
     }
 
-    BITMAP *currentImage = image1;
+    imageRect2 = load_bitmap("earth.bmp", NULL);
+    if (!imageRect2)
+    {
+        allegro_message("Impossible de charger l'image pour le deuxième rectangle");
+        allegro_exit();
+        exit(EXIT_FAILURE);
+    }
+
+    BITMAP *currentImage = imageTitle;
     int imageLoaded = FALSE;
-    int inRectangle = FALSE;
+    int inRectangle1 = FALSE;
+    int inRectangle2 = FALSE;
+    int rect1Visible = TRUE;
+    int rect2Visible = TRUE;
 
     // Création du double buffer avec les mêmes dimensions que l'écran
     buffer = create_bitmap(SCREEN_W, SCREEN_H);
@@ -56,35 +68,36 @@ int main()
 
         //////////////////////////////////////////////////////////
 
-        // Dessine le rectangle non rempli sur le double buffer uniquement si la souris est à l'intérieur
-        if (mouse_x >= 560 && mouse_x <= 745 && mouse_y >= 658 && mouse_y <= 780) {
+        // Rectangle 1
+        if (rect1Visible && mouse_x >= 560 && mouse_x <= 745 && mouse_y >= 658 && mouse_y <= 780) {
             rect(buffer, 560, 658, 745, 780, makecol(255, 0, 255));
+
+            if (mouse_b & 1) {
+                currentImage = imageRect1;
+                imageLoaded = TRUE;
+                rect1Visible = FALSE;
+            }
         }
 
+        // Rectangle 2
+        if (rect2Visible && mouse_x >= 750 && mouse_x <= 958 && mouse_y >= 658 && mouse_y <= 780) {
+            rect(buffer, 750, 658, 958, 780, makecol(255, 0, 255));
+
+            if (mouse_b & 1) {
+                currentImage = imageRect2;
+                imageLoaded = TRUE;
+                rect2Visible = FALSE;
+            }
+        }
 
         ///////////////////////////////////////////////////////////
 
-        // Dessine le rectangle non rempli sur le double buffer uniquement si la souris est à l'intérieur
-        if (currentImage == image1 && mouse_x >= 750 && mouse_x <= 958 && mouse_y >= 658 && mouse_y <= 780) {
-            rect(buffer, 750, 658, 958, 780, makecol(255, 0, 255));
-            inRectangle = TRUE;
-
-            // Si le clic gauche est enfoncé à l'intérieur du rectangle
-            if (mouse_b & 1) {
-                // Chargez et affichez l'image choisie
-                currentImage = image2;
-                imageLoaded = TRUE;
-            }
-        }
-        else {
-            inRectangle = FALSE;
-            imageLoaded = FALSE; // Réinitialisez l'état de l'image chargée si la souris n'est pas à l'intérieur du rectangle
-        }
-
         // Si la touche Entrée est enfoncée, revenez à l'image initiale, peu importe l'image actuelle
         if (key[KEY_ENTER]) {
-            currentImage = image1;
+            currentImage = imageTitle;
             imageLoaded = FALSE;
+            rect1Visible = TRUE;
+            rect2Visible = TRUE;
         }
 
         // Transfère le contenu du double buffer à l'écran
@@ -97,8 +110,9 @@ int main()
     }
 
     destroy_bitmap(buffer); // Libère la mémoire du double buffer
-    destroy_bitmap(image1);
-    destroy_bitmap(image2);
+    destroy_bitmap(imageTitle);
+    destroy_bitmap(imageRect1);
+    destroy_bitmap(imageRect2);
     allegro_exit();
     return 0;
 }
