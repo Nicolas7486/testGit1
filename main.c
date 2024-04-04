@@ -1,30 +1,29 @@
 #include <allegro.h>
-#include <time.h>
-
+#include "Sous-Programme.h"
 #define TRUE 1
 #define FALSE 0
+int main() {
+    srand(time(NULL));
+    allegro_init();
+    install_keyboard();
+    install_mouse();
 
-int main()
-{
     BITMAP *imageTitle;
     BITMAP *imageRect1;
     BITMAP *imageRect2;
     BITMAP *buffer; // Déclaration du double buffer
 
-    srand(time(NULL));
-    allegro_init();
-    install_keyboard();
-    install_mouse(); // Initialisation de la souris
 
     set_color_depth(desktop_color_depth());
-    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 1500, 800, 0, 0) != 0)
-    {
+    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 1500, 800, 0, 0) != 0) {
         allegro_message("prb gfx mode");
         allegro_exit();
         exit(EXIT_FAILURE);
     }
 
-    imageTitle = load_bitmap("Stylo.bmp", NULL);
+
+
+    imageTitle = load_bitmap("fond1.bmp", NULL); // ECRAN ACCUEIL
     if (!imageTitle)
     {
         allegro_message("Impossible de charger l'image de l'écran titre");
@@ -32,15 +31,15 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    imageRect1 = load_bitmap("Cowboyo.bmp", NULL);
+   /* imageRect1 = load_bitmap("Cowboyo.bmp", NULL);
     if (!imageRect1)
     {
         allegro_message("Impossible de charger l'image pour le premier rectangle");
         allegro_exit();
         exit(EXIT_FAILURE);
-    }
+    }*/
 
-    imageRect2 = load_bitmap("earth.bmp", NULL);
+    imageRect2 = load_bitmap("Chapeau.bmp", NULL); // ici c les regles
     if (!imageRect2)
     {
         allegro_message("Impossible de charger l'image pour le deuxième rectangle");
@@ -74,7 +73,8 @@ int main()
 
             if (mouse_b & 1) {
                 currentImage = imageRect1;
-                imageLoaded = TRUE;
+               player();
+
                 rect1Visible = FALSE;
             }
         }
@@ -114,6 +114,9 @@ int main()
     destroy_bitmap(imageRect1);
     destroy_bitmap(imageRect2);
     allegro_exit();
+
+
+
     return 0;
 }
 END_OF_MAIN();
