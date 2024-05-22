@@ -1,0 +1,302 @@
+//
+// Created by Nathan Dabi on 28/03/2024.
+//
+
+#include "Sous-Programme.h"
+
+int player() {
+
+
+    BITMAP *buffer = create_bitmap(SCREEN_W, SCREEN_H);
+    clear_to_color(buffer, makecol(0, 0, 0));
+    BITMAP *background = load_bitmap("newfond.bmp", NULL);
+    Joueur joueur1 = {load_bitmap("joueur1.bmp", NULL), 1105, 157, 0, 0};
+    Joueur joueur2 = {load_bitmap("joueur2.bmp", NULL), 225, 555, 0, 0};
+    Tomate tomate = {load_bitmap("tomate.bmp", NULL), 65, 180, 0,0};
+    Pain pain = {load_bitmap("pain.bmp", NULL), 65, 238, 0};
+    Viande viande = {load_bitmap("viande.bmp", NULL), 65, 297, 0};
+    Salade salade = {load_bitmap("salade.bmp", NULL), 65, 356, 0};
+    Burger burger = {load_bitmap("burger.bmp", NULL), 65, 409, 0};
+    ViandeCuite viandecuite = {load_bitmap("viandeCuite.bmp", NULL), 65, 409, 0};
+
+
+    tomate.x = 65;
+    tomate.y = 180;
+
+
+
+    pain.x=65;
+    pain.y=238;
+
+    viandecuite.x=709;
+    viandecuite.y=157;
+
+    salade.y=65;
+    salade.y=356;
+
+
+// Création des structures pour les propriétés des joueurs
+// Définition des coordonnées de la zone interdite
+
+    ZoneInterdite zone_interdite = {470, 325, 558, 113};
+    ZoneGaz zone_gaz = {709, 157, 240, 55};
+    LimiteMap limite_map = {64, 1428, 100, 713};
+    ZoneCoffre zone_coffre = {67, 148, 69, 345};
+    ZoneGaz2 zone_gaz2 ={946,553, 243, 57};
+    ZoneEvier zone_Evier ={1345,215,85,225};
+    ZoneDepot zone_depot ={548,501,234,213};
+
+    int speed = 9;
+    int tomatePrise = 0;
+    int tolerance = 10;
+    int x;
+    int y;
+
+    int score =0;
+    int nomJoueur1;
+    int nomJoueur2;
+    allegro_message("quel est le nom du joueur1:\n");
+    scanf("%d",&nomJoueur1);
+    allegro_message("quel est le nom du joueur2:\n");
+    scanf("%d",&nomJoueur2);
+
+    int rect2Visible = TRUE;
+
+//  interactive
+    while (!key[KEY_ESC]) {
+
+        items( joueur1,joueur2,&tomate,&viande,&pain,&viandecuite,&burger,&salade);
+
+        draw_sprite(buffer, background, 0, 0);
+        draw_sprite(buffer, pain.bitmap, pain.x, pain.y);
+        draw_sprite(buffer, tomate.bitmap, tomate.x, tomate.y);
+        draw_sprite(buffer, viande.bitmap, viande.x, viande.y);
+        draw_sprite(buffer, salade.bitmap, salade.x, salade.y);
+
+
+
+// Déplacement du joueur 1 avec les touches fléchées
+        if (key[KEY_UP]) joueur1.dy = -speed; else if (key[KEY_DOWN]) joueur1.dy = speed; else joueur1.dy = 0;
+        if (key[KEY_LEFT]) joueur1.dx = -speed; else if (key[KEY_RIGHT]) joueur1.dx = speed; else joueur1.dx = 0;
+
+        if (key[KEY_Z]) joueur2.dy = -speed; else if (key[KEY_S]) joueur2.dy = speed; else joueur2.dy = 0;
+        if (key[KEY_Q]) joueur2.dx = -speed; else if (key[KEY_D]) joueur2.dx = speed; else joueur2.dx = 0;
+
+
+// Déplacement des joueurs avec gest
+// ion des bords
+        deplacer(&joueur1, speed, zone_interdite, zone_gaz, zone_gaz2, zone_coffre, zone_Evier, zone_depot, limite_map);
+        deplacer(&joueur2, speed, zone_interdite, zone_gaz, zone_gaz2, zone_coffre, zone_Evier, zone_depot, limite_map);
+
+// Affichage des joueurs à leur nouvelle position
+
+
+        draw_sprite(buffer, joueur1.bitmap, joueur1.x, joueur1.y);
+        draw_sprite(buffer, joueur2.bitmap, joueur2.x, joueur2.y);
+
+        if (abs(pain.x - salade.x)<= tolerance && abs(pain.y -salade.y)<= tolerance){
+
+
+            draw_sprite(buffer,pain.bitmap,pain.x,pain.y);
+            draw_sprite(buffer,salade.bitmap, salade.x, salade.y);
+            draw_sprite(buffer, burger.bitmap, pain.x, pain.y);
+
+            pain.x = salade.x;
+            pain.y = salade.y;}
+
+        // TRANSFORMER LA VIANDE EN VIANDE CUITE
+     /*   if (abs(viande.x - 709)<= tolerance && abs(viande.y - 157)<= tolerance){
+            clear_bitmap(viande.bitmap);
+
+            draw_sprite(buffer, viandecuite.bitmap, viandecuite.x, viandecuite.y);
+
+
+        }*/
+
+// POUR AFFICHER PLUSIEURS ITEMS LES UNS SUR LES AUTRES
+        if(tomate.x !=65 && tomate.y != 180){
+            draw_sprite(buffer, tomate.bitmap, 65,180 );}
+        if(salade.x !=65 && salade.y != 356){
+            draw_sprite(buffer, salade.bitmap, 65,356 );}
+        if(viande.x !=65 && viande.y != 297){
+            draw_sprite(buffer, viande.bitmap, 65,297 );}
+        if(pain.x !=65 && pain.y != 238){
+            draw_sprite(buffer, pain.bitmap, 65,238 );}
+
+
+// POUR DEPOSER DES ITEMS SUR LE PLAN DE TRAVAIL 1
+         //bord( joueur1,joueur2,viande,tomate,pain,salade,burger );
+
+        int tolerance2=10;
+        // int score=0;
+        if (abs(tomate.x-650)<=70 && abs(tomate.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R] ){
+            tomate.x=628;
+            tomate.y=329;}
+        if (abs(tomate.x-628)<=tolerance2 && abs(tomate.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            tomate.x=650;
+            tomate.y=268;}
+        if (abs(pain.x-650)<=70 && abs(pain.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R] ){
+            pain.x=628;
+            pain.y=329;}
+        if (abs(pain.x-628)<=tolerance2 && abs(pain.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            pain.x=650;
+            pain.y=268;}
+        if (abs(salade.x-650)<=70 && abs(salade.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            salade.x=628;
+            salade.y=329;}
+        if (abs(salade.x-628)<=tolerance2 && abs(salade.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            salade.x=650;
+            salade.y=268;}
+        if (abs(burger.x-650)<=70 && abs(burger.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            burger.x=628;
+            burger.y=329;}
+        if (abs(burger.x-628)<=tolerance2 && abs(burger.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            burger.x=650;
+            burger.y=268;}
+
+        // POUR METTRE DANS LA POUBELLE
+
+        if (abs(tomate.x-650)<=70 && abs(tomate.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R] ){
+            tomate.x=628;
+            tomate.y=329;}
+        if (abs(tomate.x-628)<=tolerance2 && abs(tomate.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            tomate.x=650;
+            tomate.y=268;}
+        if (abs(pain.x-650)<=70 && abs(pain.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            pain.x=628;
+            pain.y=329;}
+        if (abs(pain.x-628)<=tolerance2 && abs(pain.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            pain.x=650;
+            pain.y=268;}
+        if (abs(salade.x-650)<=70 && abs(salade.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            salade.x=628;
+            salade.y=329;}
+        if (abs(salade.x-628)<=tolerance2 && abs(salade.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            salade.x=650;
+            salade.y=268;}
+        if (abs(burger.x-650)<=70 && abs(burger.y-268)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            burger.x=628;
+            burger.y=329;}
+        if (abs(burger.x-628)<=tolerance2 && abs(burger.y-329)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            burger.x=650;
+            burger.y=268;}
+
+
+        // PLAN DE TRAVAIL 2
+
+        if (abs(tomate.x-543)<=70 && abs(tomate.y-443)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            tomate.x=527;
+            tomate.y=387;}
+        if (abs(tomate.x-527)<=tolerance2 && abs(tomate.y-387)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            tomate.x=543;
+            tomate.y=443;}
+        if (abs(pain.x-543)<=70 && abs(pain.y-443)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            pain.x=527;
+            pain.y=387;}
+        if (abs(pain.x-527)<=tolerance2 && abs(pain.y-387)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            pain.x=543;
+            pain.y=443;}
+        if (abs(salade.x-543)<=70 && abs(salade.y-443)<=tolerance2 && key[KEY_T] || key[KEY_R] ){
+            salade.x=527;
+            salade.y=387;}
+        if (abs(salade.x-527)<=tolerance2 && abs(salade.y-387)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            salade.x=543;
+            salade.y=443;}
+        if (abs(burger.x-543)<=70 && abs(burger.y-443)<=tolerance2 && key[KEY_T] || key[KEY_R] ){
+            burger.x=527;
+            burger.y=387;}
+        if (abs(burger.x-527)<=tolerance2 && abs(burger.y-387)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            burger.x=543;
+            burger.y=443;}
+
+        // SUR LE DEPOT
+        if (abs(burger.x-650)<=30 && abs(burger.y-445)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            burger.x=650;
+            burger.y=583;}
+        if (abs(pain.x-650)<=30 && abs(pain.y-445)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            pain.x=650;
+            pain.y=583;
+            allegro_message("BRAVO, vous avez gagne 1 point en déposant un burger");
+            score++;
+            allegro_message("%d", score);}
+        if (abs(salade.x-650)<=30 && abs(salade.y-445)<=tolerance2 && key[KEY_T] || key[KEY_R]){
+            salade.x=650;
+            salade.y=583;}
+
+        // DANS L'EVIER
+
+        if (abs(tomate.x-1267)<=tolerance2 && abs(tomate.y-264)<=70 && key[KEY_T] || key[KEY_R]){
+            tomate.x=1350;
+            tomate.y=223;}
+        if (abs(tomate.x-1350)<=tolerance2 && abs(tomate.y-223)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            tomate.x=1267;
+            tomate.y=264;}
+        if (abs(salade.x-1267)<=tolerance2 && abs(salade.y-264)<=70 && key[KEY_T]|| key[KEY_R] ){
+            salade.x=1350;
+            salade.y=223;}
+        if (abs(salade.x-1350)<=tolerance2 && abs(salade.y-223)<=tolerance2 && key[KEY_U] || key[KEY_A]){
+            salade.x=1267;
+            salade.y=264;}
+
+
+        // METTRE LA VIANDE SUR LA PLAQUE
+        if (abs(viande.x-629)<=tolerance2 && abs(viande.y-158)<=tolerance2 && key[KEY_C] ){
+            viande.x=709;
+            viande.y=157;
+        }
+        if (abs(viande.x-709)<=tolerance2 && abs(viande.y-157)<=tolerance2 ){
+            viande.x=629;
+            viande.y=158;
+        }
+
+
+
+// Prendre la tomate et les autres items a l'origine
+        if ( key[KEY_P] && abs(joueur1.x-148)<=tolerance2 && abs(joueur1.y-tomate.y)<=tolerance2 ){
+            tomate.x=joueur1.x;
+            tomate.y=joueur1.y;
+        }
+
+        if ( key[KEY_P] && abs(joueur1.x-148)<=tolerance2 && abs(joueur1.y-viande.y)<=tolerance2){
+            viande.x=joueur1.x;
+            viande.y=joueur1.y;
+        }
+        if ( key[KEY_P] && abs(joueur1.x-148)<=tolerance2 && abs(joueur1.y-pain.y)<=tolerance2){
+            pain.x=joueur1.x;
+            pain.y=joueur1.y;
+        }
+        if ( key[KEY_P] && abs(joueur1.x-148)<=tolerance2 && abs(joueur1.y-salade.y)<=tolerance2){
+            salade.x=joueur1.x;
+            salade.y=joueur1.y;
+        }
+//joueur 2
+        if ( key[KEY_E] && abs(joueur2.x-148)<=tolerance2 && abs(joueur2.y-tomate.y)<=tolerance2){
+            tomate.x=joueur2.x;
+            tomate.y=joueur2.y;
+        }
+        if ( key[KEY_E] && abs(joueur2.x-148)<=tolerance2 && abs(joueur2.y-viande.y)<=tolerance2){
+            viande.x=joueur2.x;
+            viande.y=joueur2.y;
+        }
+        if ( key[KEY_E] && abs(joueur2.x-148)<=tolerance2 && abs(joueur2.y-pain.y)<=tolerance2){
+            pain.x=joueur2.x;
+            pain.y=joueur2.y;
+        }
+        if ( key[KEY_E] && abs(joueur2.x-148)<=tolerance2 && abs(joueur2.y-salade.y)<=tolerance2){
+            salade.x=joueur2.x;
+            salade.y=joueur2.y;
+        }
+
+
+        // QUITTER LE JEU:
+        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    }
+    destroy_bitmap(buffer);
+}
+
+
+
+
+
+// Fonction pour déplacer un joueur avec gestion des zones
+// Fonction pour déplacer un joueur avec gestion des zones
