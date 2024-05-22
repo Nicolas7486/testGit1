@@ -1,0 +1,141 @@
+//
+// Created by Nathan Dabi on 07/04/2024.
+//
+
+#include "Sous-Programme.h"
+#include <allegro.h>
+
+void deplacer(Joueur *joueur, int speed, ZoneInterdite zone_interdite, ZoneGaz zone_gaz, ZoneGaz2 zone_gaz2, ZoneCoffre zone_coffre, ZoneEvier zone_evier, ZoneDepot zone_depot, LimiteMap limite_map) {
+    // Déplacement en x
+    joueur->x += joueur->dx;
+    // Vérification des limites de la carte en x
+    if (joueur->x < limite_map.x_min) {
+        joueur->x = limite_map.x_min;
+    } else if (joueur->x + joueur->bitmap->w > limite_map.x_max) {
+        joueur->x = limite_map.x_max - joueur->bitmap->w;
+    }
+    // Vérification de la zone interdite en x
+    if (joueur->x + joueur->bitmap->w > zone_interdite.x && joueur->x < zone_interdite.x + zone_interdite.w &&
+        joueur->y + joueur->bitmap->h > zone_interdite.y && joueur->y < zone_interdite.y + zone_interdite.h) {
+        if (joueur->dx > 0) {
+            joueur->x = zone_interdite.x - joueur->bitmap->w;
+        } else {
+            joueur->x = zone_interdite.x + zone_interdite.w;
+        }
+    }
+    // Vérification de la zone "gaz" en x
+    if (joueur->x + joueur->bitmap->w > zone_gaz.x && joueur->x < zone_gaz.x + zone_gaz.w &&
+        joueur->y + joueur->bitmap->h > zone_gaz.y && joueur->y < zone_gaz.y + zone_gaz.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+    // Vérification de la zone "gaz2" en x
+    if (joueur->x + joueur->bitmap->w > zone_gaz2.x && joueur->x < zone_gaz2.x + zone_gaz2.w &&
+        joueur->y + joueur->bitmap->h > zone_gaz2.y && joueur->y < zone_gaz2.y + zone_gaz2.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+    // Vérification de la zone de coffre en x
+    if (joueur->x + joueur->bitmap->w > zone_coffre.x && joueur->x < zone_coffre.x + zone_coffre.w &&
+        joueur->y + joueur->bitmap->h > zone_coffre.y && joueur->y < zone_coffre.y + zone_coffre.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+    if (joueur->x + joueur->bitmap->w > zone_evier.x && joueur->x < zone_evier.x + zone_evier.w &&
+        joueur->y + joueur->bitmap->h > zone_evier.y && joueur->y < zone_evier.y + zone_evier.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+    if (joueur->x + joueur->bitmap->w > zone_evier.x && joueur->x < zone_evier.x + zone_evier.w &&
+        joueur->y + joueur->bitmap->h > zone_evier.y && joueur->y < zone_evier.y + zone_evier.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+    if (joueur->x + joueur->bitmap->w > zone_depot.x && joueur->x < zone_depot.x + zone_depot.w &&
+        joueur->y + joueur->bitmap->h > zone_depot.y && joueur->y < zone_depot.y + zone_depot.h) {
+        if (joueur->dx > 0) {
+            joueur->x -= speed;  // Ajuster le déplacement vers la gauche
+        } else if (joueur->dx < 0) {
+            joueur->x += speed;  // Ajuster le déplacement vers la droite
+        }
+    }
+
+
+    // Déplacement en y
+    joueur->y += joueur->dy;
+    // Vérification des limites de la carte en y
+    if (joueur->y < limite_map.y_min) {
+        joueur->y = limite_map.y_min;
+    } else if (joueur->y + joueur->bitmap->h > limite_map.y_max) {
+        joueur->y = limite_map.y_max - joueur->bitmap->h;
+    }
+    // Vérification de la zone interdite en y
+    if (joueur->y + joueur->bitmap->h > zone_interdite.y && joueur->y < zone_interdite.y + zone_interdite.h &&
+        joueur->x + joueur->bitmap->w > zone_interdite.x && joueur->x < zone_interdite.x + zone_interdite.w) {
+        if (joueur->dy > 0) {
+            joueur->y = zone_interdite.y - joueur->bitmap->h;
+        } else {
+            joueur->y = zone_interdite.y + zone_interdite.h;
+        }
+    }
+    // Vérification de la zone "gaz" en y
+    if (joueur->y + joueur->bitmap->h > zone_gaz.y && joueur->y < zone_gaz.y + zone_gaz.h &&
+        joueur->x + joueur->bitmap->w > zone_gaz.x && joueur->x < zone_gaz.x + zone_gaz.w) {
+        if (joueur->dy > 0) {
+            joueur->y -= speed;  // Ajuster le déplacement vers le haut
+        } else if (joueur->dy < 0) {
+            joueur->y += speed;  // Ajuster le déplacement vers le bas
+        }
+    }
+    // Vérification de la zone "gaz2" en y
+    if (joueur->y + joueur->bitmap->h > zone_gaz2.y && joueur->y < zone_gaz2.y + zone_gaz2.h &&
+        joueur->x + joueur->bitmap->w > zone_gaz2.x && joueur->x < zone_gaz2.x + zone_gaz2.w) {
+        if (joueur->dy > 0) {
+            joueur->y -= speed;  // Ajuster le déplacement vers le haut
+        } else if (joueur->dy < 0) {
+            joueur->y += speed;  // Ajuster le déplacement vers le bas
+        }
+    }
+    // Vérification de la zone de coffre en y
+    if (joueur->y + joueur->bitmap->h > zone_coffre.y && joueur->y < zone_coffre.y + zone_coffre.h &&
+        joueur->x + joueur->bitmap->w > zone_coffre.x && joueur->x < zone_coffre.x + zone_coffre.w) {
+        if (joueur->dy > 0) {
+            joueur->y -= speed;  // Ajuster le déplacement vers le haut
+        } else if (joueur->dy < 0) {
+            joueur->y += speed;  // Ajuster le déplacement vers le bas
+        }
+    }
+    if (joueur->y + joueur->bitmap->h > zone_evier.y && joueur->y < zone_evier.y + zone_evier.h &&
+        joueur->x + joueur->bitmap->w > zone_evier.x && joueur->x < zone_evier.x + zone_evier.w) {
+        if (joueur->dy > 0) {
+            joueur->y -= speed;  // Ajuster le déplacement vers le haut
+        } else if (joueur->dy < 0) {
+            joueur->y += speed;  // Ajuster le déplacement vers le bas
+        }
+    }
+    if (joueur->y + joueur->bitmap->h > zone_depot.y && joueur->y < zone_depot.y + zone_depot.h &&
+        joueur->x + joueur->bitmap->w > zone_depot.x && joueur->x < zone_depot.x + zone_depot.w) {
+        if (joueur->dy > 0) {
+            joueur->y -= speed;  // Ajuster le déplacement vers le haut
+        } else if (joueur->dy < 0) {
+            joueur->y += speed;  // Ajuster le déplacement vers le bas
+        }
+    }
+
+
+}
